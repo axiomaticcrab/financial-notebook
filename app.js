@@ -1,6 +1,6 @@
 var yargs = require('yargs');
 
-const incomeModule = require('./modules/incomeModule');
+//const incomeModule = require('./modules/incomeModule');
 
 yargs
     .command('createIncome', 'create an income for a mounth', {
@@ -20,7 +20,7 @@ yargs
             alias: 'd'
         }
     }, function (argv) {
-        incomeModule.create(argv.amount,argv.date,argv.name);
+        //incomeModule.create(argv.amount,argv.date,argv.name);
     })
     .help();
 
