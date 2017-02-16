@@ -1,0 +1,14 @@
+{
+  "name": "financial-notebook",
+  "version": "1.0.0",
+  "description": "A simple app for storing and viewing financial information on monthly basis.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ali Hekimoglu",
+  "license": "ISC",
+  "dependencies": {
+    "yargs": "^6.6.0"
+  }
+}
