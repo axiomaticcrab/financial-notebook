@@ -1,8 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const objectBuilder = require('./objectBuilder');
-var logger = require('./logger');
+const objectBuilder = require('./utils/objectBuilder');
+const logger = require('./utils/logger');
 
 var loggerInstance = new logger(1);
 
@@ -16,7 +16,7 @@ mongoose.connection.on('connected', () => {
 });
 
 mongoose.connection.on('error', (err) => {
-    loggerInstance.logError('db connection error' + err);
+    loggerInstance.logException('db connection error' + err);
 });
 
 mongoose.connection.on('disconnected', () => {
@@ -44,13 +44,27 @@ var incomeApiMethods = [{
     userFriendlyName: 'Create New Income',
     methodName: '/incomes/create',
     httpRequestType: 'post',
-    parameters: ['name', 'amount'],
+    parameters: [{
+        objName: 'name',
+        reqName: 'name',
+        type: 'value'
+    }, {
+        objName: 'amount',
+        reqName: 'amount',
+        type: 'value'
+    }],
     execute: function (req, res, next, i = 0) {
 
         var parameters = incomeApiMethods[0].parameters;
         objectBuilder.init();
         parameters.forEach(function (element) {
-            objectBuilder.add(element, req.body[element]);
+            if (element.type === 'value') {
+                objectBuilder.add(element.objName, req.body[element.reqName]);
+            } else if (element.type === 'object') {
+                loggerInstance.logInfo('object builder does not know how to add new child object yet!');
+            } else {
+                loggerInstance.logException('not know parameter type');
+            }
         }, this);
 
         var incomeData = objectBuilder.finalize();
