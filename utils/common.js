@@ -3,6 +3,7 @@ var moment = require('moment');
 function common() {}
 
 common.prototype.isValidDate = function (candidate) {
+    //todo : since moment will accept '5' like strings , I need to check if the given candidate is mm/yyyy format.
     return moment(candidate, 'MM/YYYY').isValid();
 }
 

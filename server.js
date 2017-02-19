@@ -80,11 +80,42 @@ app.get('/expense/remove/:id', function (req, res) {
 });
 
 app.post('/income/add', function (req, res) {
-    finalize(null, 'add income', res);
+    var name = req.body.name;
+    var amount = req.body.amount;
+    var date = req.body.date;
+    var infinite = req.body.infinite;
+
+    var income = new Income({
+        name,
+        amount,
+        date,
+        infinite
+    });
+
+    income.save(function (err) {
+        finalize(err, income, res);
+    });
 });
 
 app.get('/income/remove/:id', function (req, res) {
-    finalize(null, 'remove income with id ' + req.params.id, res);
+    var incomeId = req.params.id;
+    Income.findById(incomeId, function (err, income) {
+        if (err) {
+            finalize(err, null, res);
+        } else {
+            if (income) {
+                income.remove(function (err) {
+                    if (err) {
+                        finalize(err, null, res);
+                    } else {
+                        finalize(null, `Removed income with id ${incomeId}`, res);
+                    }
+                });
+            } else {
+                finalize(null, `There is no income with id ${incomeId} to remove.`, res);
+            }
+        }
+    })
 });
 
 app.post('/note/add', function (req, res) {
