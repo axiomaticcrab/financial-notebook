@@ -38,7 +38,25 @@ var Expense = require('./data/expense');
 var Note = require('./data/note');
 
 app.post('/expense/add', function (req, res) {
-    finalize(null, 'add expense', res);
+    var name = req.body.name;
+    var date = req.body.date;
+    var amount = req.body.amount;
+    var toWhere = req.body.toWhere;
+    var installmentAmount = req.body.installmentAmount;
+
+    //    var message = `Create expense with name ${name} - date ${date} - amount ${amount} - toWhere ${toWhere} - installemtAmount ${installmentAmount}`;
+
+    var expense = new Expense({
+        name,
+        date,
+        amount,
+        toWhere,
+        installmentAmount
+    });
+
+    expense.save(function (err) {
+        finalize(err, expense, res);
+    });
 });
 
 app.get('/expense/remove/:id', function (req, res) {
