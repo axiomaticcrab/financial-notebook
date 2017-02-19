@@ -51,9 +51,7 @@ expenseSchema.methods.createPayment = function (name, amount, date, expenseId) {
     payment.save(function (err) {
         if (err) {
             throw err;
-        } else {
-            _l.logInfo('payment created : ');
-            _l.logInfo(payment);
+        } else {            
             return payment
         };
     });

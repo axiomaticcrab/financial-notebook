@@ -69,11 +69,11 @@ app.get('/expense/remove/:id', function (req, res) {
                     if (err) {
                         finalize(err, null, res);
                     } else {
-                        finalize(null, `Deleted expense with id ${expenseId}`, res);
+                        finalize(null, `Deleted expense with id ${expenseId} .`, res);
                     }
                 });
             } else {
-                finalize(null, 'There is nothing to remove', res);
+                finalize(null, `There is no expense with id ${expenseId} to remove.`, res);
             }
         }
     });
@@ -108,7 +108,7 @@ app.get('/income/remove/:id', function (req, res) {
                     if (err) {
                         finalize(err, null, res);
                     } else {
-                        finalize(null, `Removed income with id ${incomeId}`, res);
+                        finalize(null, `Removed income with id ${incomeId} .`, res);
                     }
                 });
             } else {
@@ -119,11 +119,38 @@ app.get('/income/remove/:id', function (req, res) {
 });
 
 app.post('/note/add', function (req, res) {
-    finalize(null, 'add note', res);
+    var text = req.body.text;
+    var date = req.body.date;
+    var note = new Note({
+        text,
+        date
+    });
+
+    note.save(function (err) {
+        finalize(err, note, res);
+    });
 });
 
 app.get('/note/remove/:id', function (req, res) {
-    finalize(null, 'remove note with id ' + req.params.id, res);
+    var noteId = req.params.id;
+
+    Note.findById(noteId, function (err, note) {
+        if (err) {
+            finalize(err, null, res);
+        } else {
+            if (note) {
+                note.remove(function (err) {
+                    if (err) {
+                        finalize(err, null, res);
+                    } else {
+                        finalize(err, `Removed note with id ${noteId} .`, res);
+                    }
+                });
+            } else {
+                finalize(null, `There is no note with id ${noteId} to remove.`, res);
+            }
+        }
+    });
 });
 
 app.get('/balance/get/:date', function (req, res) {

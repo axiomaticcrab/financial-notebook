@@ -38,6 +38,10 @@ var incomeSchema = new Schema({
 incomeSchema.post('save', function (doc) {
     _l.logInfo('Income created.');
     _l.logInfo(doc);
+});
+
+incomeSchema.post('remove', function (doc) {
+    _l.logInfo(`Removed income with id ${doc.id}`);
 })
 
 var Income = mongoose.model('Income', incomeSchema);

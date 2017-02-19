@@ -45,6 +45,11 @@ var paymentSchema = new Schema({
 //     //todo : check if there are any other payment objects with current expneseId and date.if yes throw an error because that should not possible!
 // })
 
+paymentSchema.post('save', function (doc) {
+    _l.logInfo('payment created : ');
+    _l.logInfo(doc);
+});
+
 paymentSchema.post('remove', function (doc) {
     _l.logInfo(`Removed payment with id ${doc.id}`);
 });
