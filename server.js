@@ -59,7 +59,24 @@ app.post('/expense/add', function (req, res) {
 });
 
 app.get('/expense/remove/:id', function (req, res) {
-    finalize(null, 'remove expense with id ' + req.params.id, res);
+    var expenseId = req.params.id;
+    Expense.findById(expenseId, function (err, expense) {
+        if (err) {
+            finalize(err, null, res);
+        } else {
+            if (expense) {
+                expense.remove(function (err) {
+                    if (err) {
+                        finalize(err, null, res);
+                    } else {
+                        finalize(null, `Deleted expense with id ${expenseId}`, res);
+                    }
+                });
+            } else {
+                finalize(null, 'There is nothing to remove', res);
+            }
+        }
+    });
 });
 
 app.post('/income/add', function (req, res) {

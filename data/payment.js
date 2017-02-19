@@ -1,5 +1,9 @@
 var mongoose = require('mongoose');
 var common = require('../utils/common');
+var logger = require('../utils/logger');
+
+var _l = new logger();
+_l.init(_l.LogLevels.Info);
 
 var _c = new common();
 var Schema = mongoose.Schema;
@@ -40,6 +44,10 @@ var paymentSchema = new Schema({
 // paymentSchema.pre('save', function (doc) {
 //     //todo : check if there are any other payment objects with current expneseId and date.if yes throw an error because that should not possible!
 // })
+
+paymentSchema.post('remove', function (doc) {
+    _l.logInfo(`Removed payment with id ${doc.id}`);
+});
 
 var Payment = mongoose.model('payment', paymentSchema);
 

@@ -75,5 +75,20 @@ expenseSchema.post('save', function (doc) {
     _l.logInfo(doc);
 });
 
+expenseSchema.post('remove', function (doc) {
+    _l.logInfo(`Removed expense with id ${doc.id}`);
+
+    Payment.find({
+        expenseId: doc.id
+    }, function (err, payments) {
+        payments.forEach(function (element) {
+            element.remove(function (err) {
+                if (err) throw err;
+            });
+        }, this);
+    });
+});
+
 var Expense = mongoose.model('expense', expenseSchema);
+
 module.exports = Expense;
