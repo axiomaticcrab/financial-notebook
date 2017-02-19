@@ -1,5 +1,4 @@
  var logger = require('./logger');
-
  var loggerInstance = new logger(0);
 
  var resultObject;
@@ -26,6 +25,7 @@
      return resultObject;
  }
 
+//todo : this module may need to be as constractor
  module.exports = {
      init,
      add,
