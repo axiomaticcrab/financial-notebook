@@ -4,7 +4,8 @@ const mongoose = require('mongoose');
 const objectBuilder = require('./utils/objectBuilder');
 const logger = require('./utils/logger');
 
-var loggerInstance = new logger(1);
+var _l = new logger();
+_l.init(_l.LogLevels.Info);
 
 var app = express();
 app.use(bodyParser.json());
@@ -12,21 +13,21 @@ mongoose.connect('mongodb://localhost/financial-notebook');
 
 
 mongoose.connection.on('connected', () => {
-    loggerInstance.logInfo('db connection established');
+    _l.logInfo('db connection established');
 });
 
 mongoose.connection.on('error', (err) => {
-    loggerInstance.logException('db connection error' + err);
+    _l.logException('db connection error' + err);
 });
 
 mongoose.connection.on('disconnected', () => {
-    loggerInstance.logInfo('db connection is lost!');
+    _l.logInfo('db connection is lost!');
 });
 
 
 function finalize(err, obj, res) {
     if (err) {
-        loggerInstance.logException(err);
+        _l.logException(err);
         res.status(500).send(JSON.stringify(err))
     } else {
         res.send(obj);
@@ -43,8 +44,6 @@ app.post('/expense/add', function (req, res) {
     var amount = req.body.amount;
     var toWhere = req.body.toWhere;
     var installmentAmount = req.body.installmentAmount;
-
-    //    var message = `Create expense with name ${name} - date ${date} - amount ${amount} - toWhere ${toWhere} - installemtAmount ${installmentAmount}`;
 
     var expense = new Expense({
         name,

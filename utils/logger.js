@@ -1,9 +1,15 @@
-function logger(logLevel) {
-    this.currentLogLevel = logLevel;
-}
+function logger() {}
 
 function log(msg) {
     console.log(msg);
+}
+
+logger.prototype.log = function (msg) {
+    console.log(msg);
+}
+
+logger.prototype.init = function (logLevel) {
+    this.currentLogLevel = logLevel;
 }
 
 logger.prototype.logInfo = function (msg) {
