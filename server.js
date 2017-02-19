@@ -3,6 +3,10 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const objectBuilder = require('./utils/objectBuilder');
 const logger = require('./utils/logger');
+const common = require('./utils/common');
+const summary = require('./data/dto/summary');
+
+var _c = new common();
 
 var _l = new logger();
 _l.init(_l.LogLevels.Info);
@@ -154,7 +158,31 @@ app.get('/note/remove/:id', function (req, res) {
 });
 
 app.get('/balance/get/:date', function (req, res) {
-    finalize(null, 'get balance for date : ' + req.params.date, res);
+    var requestedDate = req.params.date;
+    requestedDate = _c.formatDate(requestedDate);
+    _l.log('incoming date is : ' + requestedDate);
+
+    if (requestedDate) {
+        var result = new summary();
+        result.findIncomes(requestedDate, function (incomes) {
+            result.incomes = incomes;
+
+            result.findPayments(requestedDate, function (payments) {
+                result.payments = payments;
+
+                result.findNotes(requestedDate, function (notes) {
+                    result.notes = notes;
+                    result.calculateTotalIncomeAmount();
+                    result.calculateTotalPaymentAmount();
+                    result.calculateBalance();
+                    finalize(null, result, res);
+                });
+
+            });
+        });
+    } else {
+        finalize(null, 'Invalid date format!', res);
+    }
 });
 
 app.listen(3000, () => console.log('server started at port 3000'));
