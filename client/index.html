@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Your Financial Book -- Main Page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.11.8/semantic.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.11.8/semantic.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-route.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.js"></script>
+    <script src="js/routing.js"></script>
+    <script src="js/modules/apiService.js"></script>
+    <script src="js/modules/summaryService.js"></script>
+    <script src="js/appController.js"></script>
+</head>
+
+<body ng-app="financialBook" ng-controller="appController">
+    <div class="ui grid">
+        <div class="four wide column">
+            <div class="ui large header">
+                <div class="ui huge header">Financial Book</div>
+            </div>
+        </div>
+    </div>
+    <div class="ui grid">
+        <div class="four wide column">
+            <div class="ui large header"><b>Current Date: </b> {{date}}</div>
+        </div>
+        <div class="four wide column">
+            <button class="ui icon button" aria-label="label" ng-click="prevMonth()">
+              <i class="arrow left icon"></i> Prev
+            </button>
+            <button class="ui icon button" aria-label="label" ng-click="nextMonth()">
+              Next <i class="arrow right icon"></i>
+            </button>
+        </div>
+    </div>
+    <div class="ui grid" style="background: lightgrey">
+        <div class=" four wide column">
+            <div class="ui medium header">Incomes</div>
+        </div>
+        <div class="four wide column">
+            <button class="ui icon button" aria-label="label" ng-click="addIncome()">
+              <i class="write icon"></i> Add Income
+            </button>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -61,7 +61,7 @@ summary.prototype.calculateBalance = function () {
     if (this.totalIncomeAmount && this.totalPaymentAmount) {
         this.balance = this.totalIncomeAmount - this.totalPaymentAmount;
     } else {
-        throw Error('Can not calculate balance!');
+        return 0;
     }
 
 };

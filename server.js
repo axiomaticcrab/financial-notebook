@@ -32,7 +32,7 @@ mongoose.connection.on('disconnected', () => {
 function finalize(err, obj, res) {
     if (err) {
         _l.logException(err);
-        res.status(500).send(JSON.stringify(err))
+        res.status(500).send(err.message)
     } else {
         res.send(obj);
     }
@@ -157,7 +157,7 @@ app.get('/note/remove/:id', function (req, res) {
     });
 });
 
-app.get('/balance/get/:date', function (req, res) {
+app.get('/summary/get/:date', function (req, res) {
     var requestedDate = req.params.date;
     requestedDate = _c.formatDate(requestedDate);
     _l.log('incoming date is : ' + requestedDate);
@@ -181,7 +181,7 @@ app.get('/balance/get/:date', function (req, res) {
             });
         });
     } else {
-        finalize(null, 'Invalid date format!', res);
+        finalize(Error('invalid date format'), 'Invalid date format!', res);
     }
 });
 
