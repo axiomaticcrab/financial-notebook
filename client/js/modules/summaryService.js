@@ -4,6 +4,6 @@ angular.module('financialBook').service('summaryService', ['apiService', functio
     this.getSummary = function (date) {
         var url = apiService.buildUrl('summary', 'get');
         url = apiService.parameterize(url, date);
-        return apiService.makeGetRequest(url);
+        return apiService.makeGetRequest(url);        
     }
 }]);

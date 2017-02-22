@@ -1,52 +1,306 @@
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <title>Your Financial Book -- Main Page</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.11.8/semantic.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.11.8/semantic.min.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Your financial book!</title>
+    <meta name="description" content="Organize your income and expenses.">
+    <meta name="author" content="axiomatic.crab">
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/style.css" rel="stylesheet">
+    <style type="text/css">
+        .light-grey-bg {
+            background-color: lightgray;
+        }
+        
+        .grey-bg {
+            background-color: grey;
+            color: ghostwhite;
+        }
+        
+        .white-bg {
+            background-color: ghostwhite;
+            color: black;
+        }
+        
+        .top-buffer-5 {
+            margin-top: 5px;
+        }
+        
+        .top-buffer-10 {
+            margin-top: 10px;
+        }
+        
+        .text-bold {
+            font-size: 28;
+            font-weight: bolder;
+            display: inline
+        }
+        
+        .text-green {
+            color: green;
+            font-size: 28;
+            font-weight: bolder;
+            display: inline
+        }
+        
+        .text-red {
+            color: red;
+            font-size: 28;
+            font-weight: bolder;
+            display: inline
+        }
+        
+        .box {
+            border-style: double;
+            border-color: black;
+            border-width: 10px;
+        }
+        
+        .box-thin {
+            border-style: solid;
+            border-color: black;
+            border-width: 3px;
+        }
+    </style>
+</head>
+
+<body ng-app="financialBook" ng-controller="appController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-12 text-center">
+                    <h1><b>Financial Book</b> </h1>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <h3>
+                            <b>Current Date : {{date}}</b>
+                        </h3>
+                        <div class="col-md-12">
+                            <button type="button" class="btn btn-default" ng-click="prevMonth()">
+										Prev Month
+									</button>
+                            <button type="button" class="btn btn-default" ng-click="nextMonth()">
+										Next Month
+									</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row text-center" ng-if="!summary || error">
+            <h1>Something went wrong</h1>
+        </div>
+        <div class="row" ng-if="summary|| error===false">
+            <div class="col-md-8">
+                <div class="row top-buffer-10">
+                    <div class="col-md-12 text-center">
+                        <div class="row light-grey-bg">
+                            <div class="col-md-12">
+                                <h2><b>Income</b> <small>Your income for the month.</small><a id="modal-992680" href="#addIncomeModal"
+                                        role="button" class="btn" data-toggle="modal">Add New Income</a></h2>
+                            </div>
+                        </div>
+                        <div class="row top-buffer-5">
+                            <div class="col-md-6 col-md-offset-3 text-left">
+                                <div class="row">
+                                    <ul class="list-group">
+                                        <li class="list-group-item" ng-repeat="item in summary.incomes">
+                                            <button type="button" class="btn btn-danger btn-xs" ng-click="removeIncome(item)"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                                            <span class="badge">{{item.amount}} TL</span>
+                                            <strong>{{item.name}}</strong>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <span class="badge">{{summary.totalIncomeAmount}} TL</span>
+                                            <p class="text-center text-primary"><strong>YOUR TOTAL INCOME</strong></p>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row top-buffer-10">
+                    <div class="col-md-12 text-center">
+                        <div class="row light-grey-bg">
+                            <div class="col-md-12">
+                                <h2><b>Payment</b> <small>Your payments for the month.</small><a id="modal-992680" href="#addExpenseModal"
+                                        role="button" class="btn" data-toggle="modal">Add New Expense</a></h2>
+                            </div>
+                        </div>
+                        <div class="row top-buffer-5">
+                            <div class="col-md-6 col-md-offset-3 text-left">
+                                <div class="row">
+                                    <ul class="list-group">
+                                        <li class="list-group-item" ng-repeat="item in summary.payments">
+                                            <button type="button" class="btn btn-danger btn-xs" ng-click="removeExpense(item)"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                                            <span class="badge">{{item.amount}} TL</span>
+                                            <strong>{{item.name}}</strong>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <span class="badge">{{summary.totalPaymentAmount}} TL</span>
+                                            <p class="text-center text-primary"><strong>YOUR TOTAL EXPENSE</strong></p>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row top-buffer-10">
+                    <div class="col-md-12 text-center">
+                        <div class="row">
+                            <div class="col-md-4 col-md-offset-4 box">
+                                <h1 class="text-bold">BALANCE : </h1>
+                                <h1 ng-if="isNegative" class="text-red">{{summary.balance}} TL</h1>
+                                <h1 ng-if="!isNegative" class="text-green">{{summary.balance}} TL</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 light-grey-bg top-buffer-10 text-center box-thin">
+                <div class="col-md-12">
+                    <h2><b>Notes</b> <small>Your notes for the month.</small><a id="modal-992680" href="#addNoteModal" role="button"
+                            class="btn" data-toggle="modal">Add New Note</a></h2>
+                </div>
+                <div class="col-md-12">
+                    <div class="row top-buffer-10" ng-repeat="item in summary.notes">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <button type="button" class="btn btn-danger btn-xs" ng-click="removeNote(item)"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                            </div>
+                            <div class="col-md-9">{{item.text}}</div>
+                        </div>
+                        <div class="row">
+                            <hr/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addIncomeModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+														×
+													</button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        Add New Income
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        Fill the form to add new income.
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon1">Name</span>
+                                <input type="text" class="form-control" placeholder="to remember easily.." aria-describedby="basic-addon1" ng-model="newIncomeModel.name">
+                            </div>
+                        </div>
+                        <div class="col-md-8 top-buffer-10">
+                            <div class="input-group">
+                                <span class="input-group-addon">TL</span>
+                                <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
+                                <span class="input-group-addon">.00</span>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="income-name-text">To Where : </label>
+                            <input id="income-name-text" type="text" ng-model="newIncomeModel.toWhere" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="income-name-text">Installment Amount : </label>
+                            <input id="income-name-text" type="number" ng-model="newIncomeModel.installmentAmount" required>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon1">Is Infinite?</span>
+                                <input type="checkbox"  ng-model="newIncomeModel.inInfinite">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+														Close
+													</button>
+                    <button type="button" class="btn btn-primary">
+														Save changes
+													</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addExpenseModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+														×
+													</button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        Add New Expense
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+														Close
+													</button>
+                    <button type="button" class="btn btn-primary">
+														Save changes
+													</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addNoteModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+														×
+													</button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        Add New Note
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+														Close
+													</button>
+                    <button type="button" class="btn btn-primary">
+														Save changes
+													</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-route.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.js"></script>
     <script src="js/routing.js"></script>
     <script src="js/modules/apiService.js"></script>
     <script src="js/modules/summaryService.js"></script>
+    <script src="js/modules/incomeService.js"></script>
+    <script src="js/modules/expenseService.js"></script>
+    <script src="js/modules/noteService.js"></script>
     <script src="js/appController.js"></script>
-</head>
-
-<body ng-app="financialBook" ng-controller="appController">
-    <div class="ui grid">
-        <div class="four wide column">
-            <div class="ui large header">
-                <div class="ui huge header">Financial Book</div>
-            </div>
-        </div>
-    </div>
-    <div class="ui grid">
-        <div class="four wide column">
-            <div class="ui large header"><b>Current Date: </b> {{date}}</div>
-        </div>
-        <div class="four wide column">
-            <button class="ui icon button" aria-label="label" ng-click="prevMonth()">
-              <i class="arrow left icon"></i> Prev
-            </button>
-            <button class="ui icon button" aria-label="label" ng-click="nextMonth()">
-              Next <i class="arrow right icon"></i>
-            </button>
-        </div>
-    </div>
-    <div class="ui grid" style="background: lightgrey">
-        <div class=" four wide column">
-            <div class="ui medium header">Incomes</div>
-        </div>
-        <div class="four wide column">
-            <button class="ui icon button" aria-label="label" ng-click="addIncome()">
-              <i class="write icon"></i> Add Income
-            </button>
-        </div>
-    </div>
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
 </body>
 
 </html>

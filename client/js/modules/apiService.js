@@ -13,6 +13,9 @@ angular.module('financialBook').service('apiService', ['$http', function ($http)
     }, {
         path: '/summary/',
         code: 'summary'
+    }, {
+        path: '/note/',
+        code: 'note'
     }];
 
     this.getPath = function (pathCode) {
@@ -43,15 +46,12 @@ angular.module('financialBook').service('apiService', ['$http', function ($http)
     }
 
     this.makeGetRequest = function (uri) {
-        $http({
-            method: 'GET',
+
+        return $http({
+            method: "GET",
             url: uri
-        }).then(function (s) {
-            console.log(s.data);
-            return s.data;
-        }, function (e) {
-            console.log(e.data);
-            return null;
+        }).then(function (result) {
+            return result.data;
         });
     };
 }]);
