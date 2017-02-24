@@ -1,3 +1,6 @@
+var common = require('../../utils/common');
+var _c = new common();
+
 var Income = require('../income');
 var Payment = require('../payment');
 var Note = require('../note');
@@ -7,6 +10,7 @@ var payments = [];
 var totalIncomeAmount;
 var totalPaymentAmount;
 var balance;
+var isNegativeBalance = false;
 var notes = [];
 
 function summary() {
@@ -22,7 +26,11 @@ summary.prototype.findIncomes = function (date, callback) {
             infinite: true
         }])
         .exec(function (err, incomes) {
-            callback(incomes);
+            var list = [];
+            incomes.forEach(function (element) {
+                list.push(element.includeVirtuals());
+            }, this);
+            callback(list);
         });
 };
 
@@ -34,7 +42,11 @@ summary.prototype.findPayments = function (date, callback) {
             infinite: true
         }])
         .exec(function (err, payments) {
-            callback(payments);
+            var list = [];
+            payments.forEach(function (element) {
+                list.push(element.includeVirtuals());
+            }, this);
+            callback(list);
         });
 };
 
@@ -63,17 +75,26 @@ summary.prototype.calculateTotalPaymentAmount = function () {
 };
 
 summary.prototype.calculateBalance = function () {
+    var result;
     if (this.totalIncomeAmount && this.totalPaymentAmount) {
-        this.balance = this.totalIncomeAmount - this.totalPaymentAmount;
+        result = this.totalIncomeAmount - this.totalPaymentAmount;
     } else {
         if (!this.totalIncomeAmount) {
-            this.balance = -1 * this.totalPaymentAmount;
+            result = -1 * this.totalPaymentAmount;
+            this.isNegativeBalance = true;
         } else if (!this.totalPaymentAmount) {
-            this.balance = this.totalIncomeAmount;
+            result = this.totalIncomeAmount;
         } else {
-            this.balance = 0;
+            result = 0;
         }
     }
+    this.balance = result;
 };
+
+summary.prototype.toPrettyMoney = function () {
+    this.totalIncomeAmount = _c.prettyMoney(this.totalIncomeAmount);
+    this.totalPaymentAmount = _c.prettyMoney(this.calculateTotalPaymentAmount);
+    this.balance = _c.prettyMoney(this.balance);
+}
 
 module.exports = summary;

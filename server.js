@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const numeral = require('numeral');
+
 const logger = require('./utils/logger');
 const common = require('./utils/common');
 const summary = require('./data/dto/summary');
@@ -96,7 +98,7 @@ app.post('/income/add', function (req, res) {
     });
 
     income.save(function (err) {
-        finalize(err, income, res);
+        finalize(err, income.includeVirtuals(), res);
     });
 });
 
@@ -174,6 +176,7 @@ app.get('/summary/get/:date', function (req, res) {
                     result.calculateTotalIncomeAmount();
                     result.calculateTotalPaymentAmount();
                     result.calculateBalance();
+                    result.toPrettyMoney();
                     finalize(null, result, res);
                 });
 

@@ -1,6 +1,28 @@
 var moment = require('moment');
+var numeral = require('numeral');
 
-function common() {}
+numeral.register('locale', 'tr', {
+    delimiters: {
+        thousands: '.',
+        decimal: ','
+    },
+    abbreviations: {
+        thousand: 'b',
+        million: 'm',
+        billion: 'b',
+        trillion: 't'
+    },
+    ordinal: function (number) {
+        return '';
+    },
+    currency: {
+        symbol: '₺'
+    }
+});
+
+function common() {
+    numeral.locale('tr');
+}
 
 common.prototype.formatDate = function (targetString) {
     if (this.isValidDate(targetString)) {
@@ -20,6 +42,10 @@ common.prototype.getNextMonth = function (dateString) {
     if (currentDate.isValid()) {
         return currentDate.add(1, 'M').format('MM/YYYY');
     } else return null;
+}
+
+common.prototype.prettyMoney = function (uglyMoney) {
+    return numeral(uglyMoney).format('$ 0,0[.]00');
 }
 
 module.exports = common;

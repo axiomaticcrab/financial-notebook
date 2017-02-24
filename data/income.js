@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var numeral = require('numeral');
 var common = require('../utils/common');
 var logger = require('../utils/logger');
 
@@ -42,7 +43,17 @@ incomeSchema.post('save', function (doc) {
 
 incomeSchema.post('remove', function (doc) {
     _l.logInfo(`Removed income with id ${doc.id}`);
-})
+});
+
+incomeSchema.virtual('prettyMoney').get(function () {
+    return _c.prettyMoney(this.amount);
+});
+
+incomeSchema.methods.includeVirtuals = function () {
+    return this.toJSON({
+        virtuals: true
+    });
+}
 
 var Income = mongoose.model('Income', incomeSchema);
 

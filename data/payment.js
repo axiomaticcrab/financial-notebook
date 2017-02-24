@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var numeral = require('numeral');
 var common = require('../utils/common');
 var logger = require('../utils/logger');
 
@@ -58,6 +59,16 @@ paymentSchema.post('save', function (doc) {
 paymentSchema.post('remove', function (doc) {
     _l.logInfo(`Removed payment with id ${doc.id}`);
 });
+
+paymentSchema.virtual('prettyMoney').get(function () {
+    return _c.prettyMoney(this.amount);
+});
+
+paymentSchema.methods.includeVirtuals = function () {
+    return this.toJSON({
+        virtuals: true
+    });
+}
 
 var Payment = mongoose.model('payment', paymentSchema);
 
