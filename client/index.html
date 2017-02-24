@@ -215,14 +215,14 @@
                         </div>
                         <div class="col-md-8 top-buffer-10">
                             <div class="input-group">
-                                <span class="input-group-addon" id="basic-addon1">Installment Amount</span>
-                                <input type="text" class="form-control" placeholder="is it repeative..?" aria-describedby="basic-addon1" ng-model="newExpenseModel.installmentAmount">
-                            </div>
-                        </div>
-                        <div class="col-md-8 top-buffer-10">
-                            <div class="input-group">
                                 <span class="input-group-addon" id="basic-addon1">Is Infinite?</span>
                                 <input type="checkbox" ng-model="newExpenseModel.isInfinite">
+                            </div>
+                        </div>
+                        <div class="col-md-8 top-buffer-10" ng-if="!newExpenseModel.isInfinite">
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon1">Installment Amount</span>
+                                <input type="text" class="form-control" placeholder="is it repeative..?" aria-describedby="basic-addon1" ng-model="newExpenseModel.installmentAmount">
                             </div>
                         </div>
                     </div>
@@ -254,7 +254,7 @@
                     <div class="col-md-8">
                         <div class="input-group">
                             <span class="input-group-addon" id="basic-addon1">Note</span>
-                            <textarea cols="40" rows=5 class="form-control" placeholder="note text goes here.." aria-describedby="basic-addon1" ng-model="newNoteModel.text"></textarea>                            
+                            <textarea cols="40" rows=5 class="form-control" placeholder="note text goes here.." aria-describedby="basic-addon1" ng-model="newNoteModel.text"></textarea>
                         </div>
                     </div>
                 </div>
