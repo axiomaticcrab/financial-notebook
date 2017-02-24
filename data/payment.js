@@ -38,6 +38,11 @@ var paymentSchema = new Schema({
             },
             messsage: 'The given expense id {VALUE} is not exist.'
         }
+    },
+    infinite: {
+        type: Boolean,
+        required: '{PATH} is required',
+        default: false
     }
 });
 

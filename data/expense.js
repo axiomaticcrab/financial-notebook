@@ -37,43 +37,36 @@ var expenseSchema = new Schema({
     installmentAmount: { //how many time this expense will yield to a payment?
         type: Number,
         required: '{PATH} is required',
-        min: [0, 'The value of `{PATH}` needs to be equal or greater than ({MIN}). It is currently ({VALUE})']
+        min: [-1, 'The value of `{PATH}` needs to be equal or greater than ({MIN}). It is currently ({VALUE})']
+    },
+    infinite: {
+        type: Boolean,
+        required: '{PATH} is required',
+        default: false
     }
 });
 
-expenseSchema.methods.createPayment = function (name, amount, date, expenseId) {
-    var payment = new Payment({
-        name: name,
-        amount: amount,
-        date: date,
-        expenseId: expenseId
-    });
-    payment.save(function (err) {
-        if (err) {
-            throw err;
-        } else {
-            return payment
-        };
-    });
-};
 
 //we need to create relevant payment object(s) after expense object has created.
 expenseSchema.post('save', function (doc) {
     if (doc.installmentAmount === 0) {
-        doc.createPayment(`${doc.toWhere} - ${doc.name}`, doc.amount, doc.date, doc.id);
+        doc.createPayment(doc.createPaymentName(doc.toWhere, doc.name), doc.amount, doc.date, doc.id);
     } else if (doc.installmentAmount > 0) {
         var date = doc.date;
         for (i = 0; i < doc.installmentAmount; i++) {
             var order = i + 1;
-            doc.createPayment(`${doc.toWhere} - ${doc.name} (${order} / ${doc.installmentAmount})`, doc.amount, date, doc.id);
+            doc.createPayment(doc.createPaymentName(doc.toWhere, doc.name, doc.installmentAmount, order), doc.amount, date, doc.id);
             date = _c.getNextMonth(date);
         }
     } else if (doc.installmentAmount === -1) {
-        //todo : create infinit payment or handle it by calculating.
+        doc.installmentAmount = 0;
+        doc.infinite = true;
+        doc.createPayment(doc.createPaymentName(doc.toWhere, doc.name), doc.amount, doc.date, doc.id, doc.infinite);
     }
     _l.logInfo('expense created : ')
     _l.logInfo(doc);
 });
+
 
 expenseSchema.post('remove', function (doc) {
     _l.logInfo(`Removed expense with id ${doc.id}`);
@@ -88,6 +81,34 @@ expenseSchema.post('remove', function (doc) {
         }, this);
     });
 });
+
+expenseSchema.methods.createPayment = function (name, amount, date, expenseId, infinite) {
+    var payment = new Payment({
+        name,
+        amount,
+        date,
+        expenseId,
+        infinite
+    });
+    payment.save(function (err) {
+        if (err) {
+            throw err;
+        } else {
+            return payment
+        };
+    });
+};
+
+expenseSchema.methods.createPaymentName = function (toWhere, expenseName, installmentAmount, installmentOrder, infinite) {
+    var result = `${toWhere} - ${expenseName}`;
+
+    if (installmentAmount && installmentAmount > 0) {
+        result += ` (${order} / ${installmentAmount})`;
+    } else if (infinite) {
+        result += ' -Infinite';
+    }
+    return result;
+}
 
 var Expense = mongoose.model('expense', expenseSchema);
 

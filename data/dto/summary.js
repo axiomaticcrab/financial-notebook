@@ -27,10 +27,15 @@ summary.prototype.findIncomes = function (date, callback) {
 };
 
 summary.prototype.findPayments = function (date, callback) {
-    Payment.find({})
-        .where('date', date).exec(function (err, payments) {
+    Payment.find()
+        .or([{
+            date: date
+        }, {
+            infinite: true
+        }])
+        .exec(function (err, payments) {
             callback(payments);
-        })
+        });
 };
 
 summary.prototype.findNotes = function (date, callback) {
