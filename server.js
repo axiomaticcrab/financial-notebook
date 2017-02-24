@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const objectBuilder = require('./utils/objectBuilder');
 const logger = require('./utils/logger');
 const common = require('./utils/common');
 const summary = require('./data/dto/summary');

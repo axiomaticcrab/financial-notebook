@@ -1,1 +1,53 @@
-# Empty CSS file for your own CSS
+ .light-grey-bg {
+     background-color: lightgray;
+ }
+ 
+ .grey-bg {
+     background-color: grey;
+     color: ghostwhite;
+ }
+ 
+ .white-bg {
+     background-color: ghostwhite;
+     color: black;
+ }
+ 
+ .top-buffer-5 {
+     margin-top: 5px;
+ }
+ 
+ .top-buffer-10 {
+     margin-top: 10px;
+ }
+ 
+ .text-bold {
+     font-size: 28;
+     font-weight: bolder;
+     display: inline
+ }
+ 
+ .text-green {
+     color: green;
+     font-size: 28;
+     font-weight: bolder;
+     display: inline
+ }
+ 
+ .text-red {
+     color: red;
+     font-size: 28;
+     font-weight: bolder;
+     display: inline
+ }
+ 
+ .box {
+     border-style: double;
+     border-color: black;
+     border-width: 10px;
+ }
+ 
+ .box-thin {
+     border-style: solid;
+     border-color: black;
+     border-width: 3px;
+ }
