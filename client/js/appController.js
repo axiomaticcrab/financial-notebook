@@ -69,6 +69,11 @@ angular.module('financialBook').controller('appController', ['$scope', 'summaryS
         fetchData();
     }
 
+    $scope.toCurrentMonth = function () {
+        $scope.date = moment().format('MM-YYYY');
+        fetchData();
+    }
+
     $scope.addIncome = function () {
         $scope.newIncomeModel.date = $scope.date;
         incomeService.add($scope.newIncomeModel).then(function (result) {
