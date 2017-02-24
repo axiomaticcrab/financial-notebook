@@ -98,7 +98,7 @@ app.post('/income/add', function (req, res) {
     });
 
     income.save(function (err) {
-        finalize(err, income.includeVirtuals(), res);
+        finalize(err, income, res);
     });
 });
 
