@@ -148,4 +148,13 @@ angular.module('financialBook').controller('appController', ['$scope', 'summaryS
             }
         });
     }
+
+    $scope.keyPressed = function ($event) {
+        if ($event.keyCode == 39) {
+            $scope.nextMonth();
+        }
+        if ($event.keyCode == 37) {
+            $scope.prevMonth();
+        }
+    }
 }]);
