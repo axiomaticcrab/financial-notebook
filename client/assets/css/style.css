@@ -6,6 +6,10 @@
      background-color: grey;
      color: ghostwhite;
  }
+
+ .antiquewhite-bg {
+     background-color: antiquewhite;
+ }
  
  .white-bg {
      background-color: ghostwhite;
@@ -44,10 +48,4 @@
      border-style: double;
      border-color: black;
      border-width: 10px;
- }
- 
- .box-thin {
-     border-style: solid;
-     border-color: black;
-     border-width: 3px;
  }

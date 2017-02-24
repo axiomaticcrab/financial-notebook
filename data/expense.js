@@ -34,7 +34,7 @@ var expenseSchema = new Schema({
         type: String,
         required: '{PATH} is required for remembering what is this expense for!'
     },
-    installmentAmount: {
+    installmentAmount: { //how many time this expense will yield to a payment?
         type: Number,
         required: '{PATH} is required',
         min: [0, 'The value of `{PATH}` needs to be equal or greater than ({MIN}). It is currently ({VALUE})']
@@ -51,7 +51,7 @@ expenseSchema.methods.createPayment = function (name, amount, date, expenseId) {
     payment.save(function (err) {
         if (err) {
             throw err;
-        } else {            
+        } else {
             return payment
         };
     });
@@ -61,13 +61,15 @@ expenseSchema.methods.createPayment = function (name, amount, date, expenseId) {
 expenseSchema.post('save', function (doc) {
     if (doc.installmentAmount === 0) {
         doc.createPayment(`${doc.toWhere} - ${doc.name}`, doc.amount, doc.date, doc.id);
-    } else {
+    } else if (doc.installmentAmount > 0) {
         var date = doc.date;
         for (i = 0; i < doc.installmentAmount; i++) {
             var order = i + 1;
             doc.createPayment(`${doc.toWhere} - ${doc.name} (${order} / ${doc.installmentAmount})`, doc.amount, date, doc.id);
             date = _c.getNextMonth(date);
         }
+    } else if (doc.installmentAmount === -1) {
+        //todo : create infinit payment or handle it by calculating.
     }
     _l.logInfo('expense created : ')
     _l.logInfo(doc);

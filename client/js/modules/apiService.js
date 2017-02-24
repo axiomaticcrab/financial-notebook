@@ -46,10 +46,20 @@ angular.module('financialBook').service('apiService', ['$http', function ($http)
     }
 
     this.makeGetRequest = function (uri) {
-
         return $http({
             method: "GET",
             url: uri
+        }).then(function (result) {
+            return result.data;
+        });
+    };
+
+    this.makePostRequest = function (uri, data) {
+        data = JSON.stringify(data);
+        return $http({
+            method: "POST",
+            url: uri,
+            data: data
         }).then(function (result) {
             return result.data;
         });

@@ -1,7 +1,8 @@
 angular.module('financialBook').service('noteService', ['apiService', function (apiService) {
 
-    this.add = function () {
-
+    this.add = function (data) {
+        var url = apiService.buildUrl('note', 'add');
+        return apiService.makePostRequest(url, data);
     }
 
     this.remove = function (id) {

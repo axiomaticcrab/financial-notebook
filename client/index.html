@@ -107,7 +107,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 light-grey-bg top-buffer-10 text-center box-thin">
+            <div class="col-md-4 antiquewhite-bg top-buffer-10 text-center">
                 <div class="col-md-12">
                     <h2><b>Notes</b> <small>Your notes for the month.</small><a id="modal-992680" href="#addNoteModal" role="button"
                             class="btn" data-toggle="modal">Add New Note</a></h2>
@@ -128,6 +128,7 @@
             </div>
         </div>
     </div>
+    <!--New Income Modal-->
     <div class="modal fade" id="addIncomeModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -153,37 +154,30 @@
                         <div class="col-md-8 top-buffer-10">
                             <div class="input-group">
                                 <span class="input-group-addon">TL</span>
-                                <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
+                                <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)" ng-model="newIncomeModel.amount">
                                 <span class="input-group-addon">.00</span>
                             </div>
                         </div>
-                        <div class="col-md-12">
-                            <label for="income-name-text">To Where : </label>
-                            <input id="income-name-text" type="text" ng-model="newIncomeModel.toWhere" required>
-                        </div>
-                        <div class="col-md-12">
-                            <label for="income-name-text">Installment Amount : </label>
-                            <input id="income-name-text" type="number" ng-model="newIncomeModel.installmentAmount" required>
-                        </div>
-                        <div class="col-md-8">
+                        <div class="col-md-8 top-buffer-10">
                             <div class="input-group">
                                 <span class="input-group-addon" id="basic-addon1">Is Infinite?</span>
-                                <input type="checkbox"  ng-model="newIncomeModel.inInfinite">
+                                <input type="checkbox" ng-model="newIncomeModel.isInfinite">
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer top-buffer-10">
                     <button type="button" class="btn btn-default" data-dismiss="modal">
 														Close
 													</button>
-                    <button type="button" class="btn btn-primary">
-														Save changes.
+                    <button type="button" class="btn btn-primary" ng-click="addIncome()">
+														Add New Income
 													</button>
                 </div>
             </div>
         </div>
     </div>
+    <!--New Expense Modal-->
     <div class="modal fade" id="addExpenseModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -196,19 +190,55 @@
                     </h4>
                 </div>
                 <div class="modal-body">
-                    ...
+                    <div class="row">
+                        Fill the form to add new expense.
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon1">Name</span>
+                                <input type="text" class="form-control" placeholder="to remember easily.." aria-describedby="basic-addon1" ng-model="newExpenseModel.name">
+                            </div>
+                        </div>
+                        <div class="col-md-8 top-buffer-10">
+                            <div class="input-group">
+                                <span class="input-group-addon">TL</span>
+                                <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)" ng-model="newExpenseModel.amount">
+                                <span class="input-group-addon">.00</span>
+                            </div>
+                        </div>
+                        <div class="col-md-8 top-buffer-10">
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon1">To Where</span>
+                                <input type="text" class="form-control" placeholder="to remember easily.." aria-describedby="basic-addon1" ng-model="newExpenseModel.toWhere">
+                            </div>
+                        </div>
+                        <div class="col-md-8 top-buffer-10">
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon1">Installment Amount</span>
+                                <input type="text" class="form-control" placeholder="is it repeative..?" aria-describedby="basic-addon1" ng-model="newExpenseModel.installmentAmount">
+                            </div>
+                        </div>
+                        <div class="col-md-8 top-buffer-10">
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon1">Is Infinite?</span>
+                                <input type="checkbox" ng-model="newExpenseModel.isInfinite">
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer top-buffer-10">
                     <button type="button" class="btn btn-default" data-dismiss="modal">
 														Close
 													</button>
-                    <button type="button" class="btn btn-primary">
-														Save changes
+                    <button type="button" class="btn btn-primary" ng-click="addExpense()">
+														Add New Expense
 													</button>
                 </div>
             </div>
         </div>
     </div>
+    <!--New Note Modal-->
     <div class="modal fade" id="addNoteModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -217,18 +247,23 @@
 														×
 													</button>
                     <h4 class="modal-title" id="myModalLabel">
-                        Add New Note
+                        Fill the form to add new note.
                     </h4>
                 </div>
                 <div class="modal-body">
-                    ...
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <span class="input-group-addon" id="basic-addon1">Note</span>
+                            <textarea cols="40" rows=5 class="form-control" placeholder="note text goes here.." aria-describedby="basic-addon1" ng-model="newNoteModel.text"></textarea>                            
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">
 														Close
 													</button>
-                    <button type="button" class="btn btn-primary">
-														Save changes
+                    <button type="button" class="btn btn-primary" ng-click="addNote()">
+														Add New Note
 													</button>
                 </div>
             </div>

@@ -43,7 +43,7 @@ var Note = require('./data/note');
 
 app.post('/expense/add', function (req, res) {
     var name = req.body.name;
-    var date = req.body.date;
+    var date = _c.formatDate(req.body.date);
     var amount = req.body.amount;
     var toWhere = req.body.toWhere;
     var installmentAmount = req.body.installmentAmount;
@@ -85,8 +85,8 @@ app.get('/expense/remove/:id', function (req, res) {
 app.post('/income/add', function (req, res) {
     var name = req.body.name;
     var amount = req.body.amount;
-    var date = req.body.date;
-    var infinite = req.body.infinite;
+    var date = _c.formatDate(req.body.date);
+    var infinite = req.body.isInfinite;
 
     var income = new Income({
         name,
@@ -123,7 +123,7 @@ app.get('/income/remove/:id', function (req, res) {
 
 app.post('/note/add', function (req, res) {
     var text = req.body.text;
-    var date = req.body.date;
+    var date = _c.formatDate(req.body.date);
     var note = new Note({
         text,
         date
