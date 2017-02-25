@@ -93,7 +93,7 @@ summary.prototype.calculateBalance = function () {
 
 summary.prototype.toPrettyMoney = function () {
     this.totalIncomeAmount = _c.prettyMoney(this.totalIncomeAmount);
-    this.totalPaymentAmount = _c.prettyMoney(this.calculateTotalPaymentAmount);
+    this.totalPaymentAmount = _c.prettyMoney(this.totalPaymentAmount);
     this.balance = _c.prettyMoney(this.balance);
 }
 

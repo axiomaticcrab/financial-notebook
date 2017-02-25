@@ -55,7 +55,7 @@ expenseSchema.post('save', function (doc) {
         var date = doc.date;
         for (i = 0; i < doc.installmentAmount; i++) {
             var order = i + 1;
-            doc.createPayment(doc.createPaymentName(doc.toWhere, doc.name, doc.installmentAmount, order), doc.amount, date, doc.id);
+            doc.createPayment(doc.createPaymentName(doc.toWhere, doc.name, doc.installmentAmount, order,false), doc.amount, date, doc.id);
             date = _c.getNextMonth(date);
         }
     } else if (doc.installmentAmount === -1) {
@@ -103,7 +103,7 @@ expenseSchema.methods.createPaymentName = function (toWhere, expenseName, instal
     var result = `${toWhere} - ${expenseName}`;
 
     if (installmentAmount && installmentAmount > 0) {
-        result += ` (${order} / ${installmentAmount})`;
+        result += ` (${installmentOrder} / ${installmentAmount})`;
     } else if (infinite) {
         result += ' -Infinite';
     }
