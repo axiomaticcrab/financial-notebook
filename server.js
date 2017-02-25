@@ -164,24 +164,19 @@ app.get('/summary/get/:date', function (req, res) {
     _l.log('incoming date is : ' + requestedDate);
 
     if (requestedDate) {
-        var result = new summary();
-        result.findIncomes(requestedDate, function (incomes) {
-            result.incomes = incomes;
-
-            result.findPayments(requestedDate, function (payments) {
-                result.payments = payments;
-
-                result.findNotes(requestedDate, function (notes) {
-                    result.notes = notes;
-                    result.calculateTotalIncomeAmount();
-                    result.calculateTotalPaymentAmount();
-                    result.calculateBalance();
-                    result.toPrettyMoney();
-                    finalize(null, result, res);
-                });
-
+        var result = new summary(requestedDate);
+        result
+            .findIncomes()
+            .then(() => result.findPayments())
+            .then(() => result.findNotes())
+            .then((result) => {
+                result
+                    .calculateTotalIncomeAmount()
+                    .calculateTotalPaymentAmount()
+                    .calculateBalance()
+                    .toPrettyMoney();
+                finalize(null, result, res)
             });
-        });
     } else {
         finalize(Error('invalid date format'), 'Invalid date format!', res);
     }

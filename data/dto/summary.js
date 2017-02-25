@@ -13,88 +13,105 @@ var balance;
 var isNegativeBalance = false;
 var notes = [];
 
-function summary() {
+var self;
+var date;
 
+function summary(date) {
+    self = this;
+    self.date = date;
 }
 
 
-summary.prototype.findIncomes = function (date, callback) {
-    Income.find()
-        .or([{
-            date: date
-        }, {
-            infinite: true
-        }])
-        .exec(function (err, incomes) {
-            var list = [];
-            incomes.forEach(function (element) {
-                list.push(element.includeVirtuals());
-            }, this);
-            callback(list);
-        });
+summary.prototype.findIncomes = function () {
+    return new Promise(function (resolve, reject) {
+        Income.find()
+            .or([{
+                date: self.date
+            }, {
+                infinite: true
+            }])
+            .exec(function (err, incomes) {
+                var list = [];
+                incomes.forEach(function (element) {
+                    list.push(element.includeVirtuals());
+                }, this);
+                self.incomes = list;
+                resolve();
+            });
+    });
 };
 
-summary.prototype.findPayments = function (date, callback) {
-    Payment.find()
-        .or([{
-            date: date
-        }, {
-            infinite: true
-        }])
-        .exec(function (err, payments) {
-            var list = [];
-            payments.forEach(function (element) {
-                list.push(element.includeVirtuals());
-            }, this);
-            callback(list);
-        });
+summary.prototype.findPayments = function () {
+    return new Promise(function (resolve, reject) {
+        Payment.find()
+            .or([{
+                date: self.date
+            }, {
+                infinite: true
+            }])
+            .exec(function (err, payments) {
+                var list = [];
+                payments.forEach(function (element) {
+                    list.push(element.includeVirtuals());
+                }, this);
+                self.payments = list;
+                resolve();
+            });
+    });
 };
 
-summary.prototype.findNotes = function (date, callback) {
-    Note.find()
-        .where('date', date)
-        .exec(function (err, notes) {
-            callback(notes);
-        })
+summary.prototype.findNotes = function () {
+    return new Promise(function (resolve, reject) {
+        Note.find()
+            .where('date', self.date)
+            .exec(function (err, notes) {
+                self.notes = notes;
+                resolve(self);
+            })
+    });
 };
 
 summary.prototype.calculateTotalIncomeAmount = function () {
     var result = 0;
-    this.incomes.forEach(function (element) {
+    self.incomes.forEach(function (element) {
         result += element.amount;
     }, this);
-    this.totalIncomeAmount = result;
+    self.totalIncomeAmount = result;
+    return self;
 };
 
 summary.prototype.calculateTotalPaymentAmount = function () {
     var result = 0;
-    this.payments.forEach(function (element) {
+    self.payments.forEach(function (element) {
         result += element.amount;
     }, this);
-    this.totalPaymentAmount = result;
+    self.totalPaymentAmount = result;
+    return self;
 };
 
 summary.prototype.calculateBalance = function () {
     var result;
-    if (this.totalIncomeAmount && this.totalPaymentAmount) {
-        result = this.totalIncomeAmount - this.totalPaymentAmount;
+    if (self.totalIncomeAmount && self.totalPaymentAmount) {
+        result = self.totalIncomeAmount - self.totalPaymentAmount;
     } else {
-        if (!this.totalIncomeAmount) {
-            result = -1 * this.totalPaymentAmount;
-            this.isNegativeBalance = true;
-        } else if (!this.totalPaymentAmount) {
-            result = this.totalIncomeAmount;
+        if (!self.totalIncomeAmount) {
+            result = -1 * self.totalPaymentAmount;
+            self.isNegativeBalance = true;
+        } else if (!self.totalPaymentAmount) {
+            result = self.totalIncomeAmount;
         } else {
             result = 0;
         }
     }
-    this.balance = result;
+    self.balance = result;
+    return self;
 };
 
 summary.prototype.toPrettyMoney = function () {
-    this.totalIncomeAmount = _c.prettyMoney(this.totalIncomeAmount);
-    this.totalPaymentAmount = _c.prettyMoney(this.totalPaymentAmount);
-    this.balance = _c.prettyMoney(this.balance);
+    self.totalIncomeAmount = _c.prettyMoney(this.totalIncomeAmount);
+    self.totalPaymentAmount = _c.prettyMoney(this.totalPaymentAmount);
+    self.balance = _c.prettyMoney(this.balance);
+    return self;
 }
 
 module.exports = summary;
