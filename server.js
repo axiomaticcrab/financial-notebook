@@ -6,6 +6,10 @@ const numeral = require('numeral');
 const logger = require('./utils/logger');
 const common = require('./utils/common');
 const summary = require('./data/dto/summary');
+const _ = require('lodash');
+const authenticate = require('./middleware/authenticate');
+
+mongoose.Promise = global.Promise;
 
 var _c = new common();
 
@@ -30,33 +34,29 @@ mongoose.connection.on('disconnected', () => {
 });
 
 
-function finalize(err, obj, res) {
+function finalize(err, obj, res, header) {
     if (err) {
         _l.logException(err);
         res.status(500).send(err.message)
     } else {
-        res.send(obj);
+        if (header) {
+            res.header(header).send(obj);
+        } else {
+            res.send(obj);
+        }
+
     }
 }
 
 var Income = require('./data/income');
 var Expense = require('./data/expense');
 var Note = require('./data/note');
+var Account = require('./data/account');
 
 app.post('/expense/add', function (req, res) {
-    var name = req.body.name;
-    var date = _c.formatDate(req.body.date);
-    var amount = req.body.amount;
-    var toWhere = req.body.toWhere;
-    var installmentAmount = req.body.installmentAmount;
-
-    var expense = new Expense({
-        name,
-        date,
-        amount,
-        toWhere,
-        installmentAmount
-    });
+    var data = _.pick(req.body, ['name', 'amount', 'toWhere', 'installmentAmount']);
+    data.date = _c.formatDate(req.body.date);
+    var expense = new Expense(data);
 
     expense.save(function (err) {
         finalize(err, expense, res);
@@ -85,17 +85,9 @@ app.get('/expense/remove/:id', function (req, res) {
 });
 
 app.post('/income/add', function (req, res) {
-    var name = req.body.name;
-    var amount = req.body.amount;
-    var date = _c.formatDate(req.body.date);
-    var infinite = req.body.isInfinite;
-
-    var income = new Income({
-        name,
-        amount,
-        date,
-        infinite
-    });
+    var data = _.pick(req.body, ['name', 'amount', 'infinite']);
+    data.date = _c.formatDate(req.body.date);
+    var income = new Income(data);
 
     income.save(function (err) {
         finalize(err, income, res);
@@ -180,6 +172,28 @@ app.get('/summary/get/:date', function (req, res) {
     } else {
         finalize(Error('invalid date format'), 'Invalid date format!', res);
     }
+});
+
+app.post('/api/accounts', function (req, res) {
+    var data = _.pick(req.body, ['email', 'password']);
+    var account = new Account(data);
+
+    account.save()
+        .then(() => {
+            return account.generateAuthToken();
+        })
+        .then((token) => {
+            finalize(null, _.pick(account, ['email', '_id']), res, {
+                'x-auth': token
+            });
+        })
+        .catch((e) => {
+            finalize(e, null, res, null);
+        });
+});
+
+app.get('/api/accounts/me', authenticate, function (req, res) {
+    res.send('Hola!');
 });
 
 app.listen(3000, () => console.log('server started at port 3000'));

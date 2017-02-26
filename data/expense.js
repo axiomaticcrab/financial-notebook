@@ -34,7 +34,7 @@ var expenseSchema = new Schema({
         type: String,
         required: '{PATH} is required for remembering what is this expense for!'
     },
-    installmentAmount: { //how many time this expense will yield to a payment?
+    installmentAmount: { //the number of payment(s) needs to be created for this expense.
         type: Number,
         required: '{PATH} is required',
         min: [-1, 'The value of `{PATH}` needs to be equal or greater than ({MIN}). It is currently ({VALUE})']
