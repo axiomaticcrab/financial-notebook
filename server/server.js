@@ -53,7 +53,7 @@ var Expense = require('./data/expense');
 var Note = require('./data/note');
 var Account = require('./data/account');
 
-app.post('/expense/add', function (req, res) {
+app.post('/expense/add', authenticate, function (req, res) {
     var data = _.pick(req.body, ['name', 'amount', 'toWhere', 'installmentAmount']);
     data.date = _c.formatDate(req.body.date);
     var expense = new Expense(data);
@@ -63,7 +63,7 @@ app.post('/expense/add', function (req, res) {
     });
 });
 
-app.get('/expense/remove/:id', function (req, res) {
+app.get('/expense/remove/:id', authenticate, function (req, res) {
     var expenseId = req.params.id;
     Expense.findById(expenseId, function (err, expense) {
         if (err) {
@@ -84,7 +84,7 @@ app.get('/expense/remove/:id', function (req, res) {
     });
 });
 
-app.post('/income/add', function (req, res) {
+app.post('/income/add', authenticate, function (req, res) {
     var data = _.pick(req.body, ['name', 'amount', 'infinite']);
     data.date = _c.formatDate(req.body.date);
     var income = new Income(data);
@@ -94,7 +94,7 @@ app.post('/income/add', function (req, res) {
     });
 });
 
-app.get('/income/remove/:id', function (req, res) {
+app.get('/income/remove/:id', authenticate, function (req, res) {
     var incomeId = req.params.id;
     Income.findById(incomeId, function (err, income) {
         if (err) {
@@ -115,7 +115,7 @@ app.get('/income/remove/:id', function (req, res) {
     })
 });
 
-app.post('/note/add', function (req, res) {
+app.post('/note/add', authenticate, function (req, res) {
     var text = req.body.text;
     var date = _c.formatDate(req.body.date);
     var note = new Note({
@@ -128,7 +128,7 @@ app.post('/note/add', function (req, res) {
     });
 });
 
-app.get('/note/remove/:id', function (req, res) {
+app.get('/note/remove/:id', authenticate, function (req, res) {
     var noteId = req.params.id;
 
     Note.findById(noteId, function (err, note) {
@@ -150,7 +150,7 @@ app.get('/note/remove/:id', function (req, res) {
     });
 });
 
-app.get('/summary/get/:date', function (req, res) {
+app.get('/summary/get/:date', authenticate, function (req, res) {
     var requestedDate = req.params.date;
     requestedDate = _c.formatDate(requestedDate);
     _l.log('incoming date is : ' + requestedDate);
