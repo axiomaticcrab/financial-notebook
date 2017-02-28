@@ -45,10 +45,12 @@ incomeSchema.post('remove', function (doc) {
     _l.logInfo(`Removed income with id ${doc.id}`);
 });
 
+//Calculated Property
 incomeSchema.virtual('prettyMoney').get(function () {
     return _c.prettyMoney(this.amount);
 });
 
+//Schema function
 incomeSchema.methods.includeVirtuals = function () {
     return this.toJSON({
         virtuals: true
