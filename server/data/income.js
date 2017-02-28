@@ -50,7 +50,7 @@ incomeSchema.virtual('prettyMoney').get(function () {
     return _c.prettyMoney(this.amount);
 });
 
-//Schema function
+//Instance function
 incomeSchema.methods.includeVirtuals = function () {
     return this.toJSON({
         virtuals: true

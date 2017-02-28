@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var validator = require('validator');
 var jwt = require('jsonwebtoken');
+var _ = require('lodash');
 
 var Schema = mongoose.Schema;
 
@@ -50,15 +51,16 @@ accountSchema.methods.generateAuthToken = function () {
     });
 
     return user.save().then(() => token);
-};
+}
 
+//this is a schema function.
 accountSchema.statics.findByToken = function (token) {
     var Account = this;
     var decoded;
 
     try {
-        decoded = jwt.verify(token, 'secret')        
-    } catch (e) {        
+        decoded = jwt.verify(token, 'secret')
+    } catch (e) {
         return Promise.reject();
     }
 
@@ -67,6 +69,19 @@ accountSchema.statics.findByToken = function (token) {
         'tokens.token': token,
         'tokens.access': 'auth'
     });
+}
+
+accountSchema.statics.findByCredentials = function (email, password) {
+    return Account.findOne({
+        'email': email,
+        'password': password
+    });
+}
+
+accountSchema.methods.toJSON = function () {
+    var account = this;
+    var accountObject = account.toObject();
+    return _.pick(accountObject, ['_id', 'email']);
 }
 
 var Account = mongoose.model('account', accountSchema);

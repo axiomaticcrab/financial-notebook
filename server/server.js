@@ -183,7 +183,7 @@ app.post('/api/accounts', function (req, res) {
             return account.generateAuthToken();
         })
         .then((token) => {
-            finalize(null, _.pick(account, ['email', '_id']), res, {
+            finalize(null, account, res, {
                 'x-auth': token
             });
         })
@@ -192,8 +192,24 @@ app.post('/api/accounts', function (req, res) {
         });
 });
 
+app.post('/api/accounts/login', function (req, res) {
+    var email = req.body.email;
+    var password = req.body.password;
+
+    Account.findByCredentials(email, password).then((account) => {
+        return account.generateAuthToken()
+            .then((token) => {
+                finalize(null, account, res, {
+                    'x-auth': token
+                });
+            }).catch((e) => {
+                finalize(e, null, res, null);
+            });
+    });
+})
+
 app.get('/api/accounts/me', authenticate, function (req, res) {
-    res.send('Hola!');
+    res.send(req.account);
 });
 
 app.listen(3000, () => console.log('server started at port 3000'));

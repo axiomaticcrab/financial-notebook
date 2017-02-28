@@ -23,5 +23,13 @@
     "mocha": "^3.2.0",
     "rewire": "^2.5.2",
     "supertest": "^3.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/axiomaticcrab/financial-notebook.git"
+  },
+  "bugs": {
+    "url": "https://github.com/axiomaticcrab/financial-notebook/issues"
+  },
+  "homepage": "https://github.com/axiomaticcrab/financial-notebook#readme"
 }
