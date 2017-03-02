@@ -37,7 +37,12 @@ mongoose.connection.on('disconnected', () => {
 function finalize(err, obj, res, header) {
     if (err) {
         _l.logException(err);
-        res.status(500).send(err.message)
+        if (err.hasOwnProperty('message')) {
+            res.status(500).send(err.message)
+        } else {
+            res.status(500).send(err);
+        }
+
     } else {
         if (header) {
             res.header(header).send(obj);
@@ -84,9 +89,10 @@ app.get('/expense/remove/:id', authenticate, function (req, res) {
     });
 });
 
-app.post('/income/add', authenticate, function (req, res) {
+app.post('/api/income', authenticate, function (req, res) {
     var data = _.pick(req.body, ['name', 'amount', 'infinite']);
     data.date = _c.formatDate(req.body.date);
+    data.accountId = req.account._id;
     var income = new Income(data);
 
     income.save(function (err) {
@@ -94,25 +100,13 @@ app.post('/income/add', authenticate, function (req, res) {
     });
 });
 
-app.get('/income/remove/:id', authenticate, function (req, res) {
+app.delete('/api/income/:id', authenticate, function (req, res) {
     var incomeId = req.params.id;
-    Income.findById(incomeId, function (err, income) {
-        if (err) {
-            finalize(err, null, res);
-        } else {
-            if (income) {
-                income.remove(function (err) {
-                    if (err) {
-                        finalize(err, null, res);
-                    } else {
-                        finalize(null, `Removed income with id ${incomeId} .`, res);
-                    }
-                });
-            } else {
-                finalize(null, `There is no income with id ${incomeId} to remove.`, res);
-            }
-        }
-    })
+    Income.findAndDelete(incomeId, req.account).then(() => {
+        finalize(null, `Removed income with id ${incomeId}`, res);
+    }).catch((e) => {
+        finalize(e, null, res);
+    });  
 });
 
 app.post('/note/add', authenticate, function (req, res) {

@@ -33,6 +33,10 @@ var incomeSchema = new Schema({
         type: Boolean,
         required: false,
         default: false
+    },
+    accountId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: '{PATH} is required.'
     }
 });
 
@@ -40,6 +44,32 @@ incomeSchema.post('save', function (doc) {
     _l.logInfo('Income created.');
     _l.logInfo(doc);
 });
+
+incomeSchema.statics.findAndDelete = function (incomeId, account) {
+    return new Promise(function (resolve, reject) {
+        Income.findById(incomeId).then((income) => {
+            if (income) {
+                resolve(income.delete(account));
+            } else {
+                reject(`There is no income with id ${incomeId} to remove.`);
+            }
+        }).catch(function (e) {
+            reject(e);
+        });
+    });
+}
+
+incomeSchema.methods.delete = function (account) {
+    var income = this;
+    return new Promise(function (resolve, reject) {
+        if (account._doc._id.equals(income._doc.accountId) === false) {
+            reject(new Error('This account can not remove this income'), null);
+        } else {
+            resolve(income.remove());
+        }
+    });
+};
+
 
 incomeSchema.post('remove', function (doc) {
     _l.logInfo(`Removed income with id ${doc.id}`);
