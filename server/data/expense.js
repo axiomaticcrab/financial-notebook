@@ -59,7 +59,7 @@ expenseSchema.statics.findAndDelete = function (expenseId, account) {
             } else {
                 reject(`There is no expense with id ${expenseId}`);
             }
-        }).catch((e)=>{
+        }).catch((e) => {
             reject(e);
         })
     });
@@ -72,25 +72,25 @@ expenseSchema.methods.delete = function (account) {
             reject(`This account can not delete given expense.`);
         } else {
             resolve(expense.remove());
-        }       
+        }
     });
 }
 
 //we need to create relevant payment object(s) after expense object has created.
 expenseSchema.post('save', function (doc) {
     if (doc.installmentAmount === 0) {
-        doc.createPayment(doc.createPaymentName(doc.toWhere, doc.name), doc.amount, doc.date, doc.id);
+        doc.createPayment(doc.accountId, doc.createPaymentName(doc.toWhere, doc.name), doc.amount, doc.date, doc.id);
     } else if (doc.installmentAmount > 0) {
         var date = doc.date;
         for (i = 0; i < doc.installmentAmount; i++) {
             var order = i + 1;
-            doc.createPayment(doc.createPaymentName(doc.toWhere, doc.name, doc.installmentAmount, order, false), doc.amount, date, doc.id);
+            doc.createPayment(doc.accountId, doc.createPaymentName(doc.toWhere, doc.name, doc.installmentAmount, order, false), doc.amount, date, doc.id);
             date = _c.getNextMonth(date);
         }
     } else if (doc.installmentAmount === -1) {
         doc.installmentAmount = 0;
         doc.infinite = true;
-        doc.createPayment(doc.createPaymentName(doc.toWhere, doc.name), doc.amount, doc.date, doc.id, doc.infinite);
+        doc.createPayment(doc.accountId, doc.createPaymentName(doc.toWhere, doc.name), doc.amount, doc.date, doc.id, doc.infinite);
     }
     _l.logInfo('expense created : ')
     _l.logInfo(doc);
@@ -115,13 +115,14 @@ expenseSchema.statics.deletePayments = function (expenseId) {
     });
 }
 
-expenseSchema.methods.createPayment = function (name, amount, date, expenseId, infinite) {
+expenseSchema.methods.createPayment = function (accountId, name, amount, date, expenseId, infinite) {
     var payment = new Payment({
         name,
         amount,
         date,
         expenseId,
-        infinite
+        infinite,
+        accountId
     });
     payment.save(function (err) {
         if (err) {

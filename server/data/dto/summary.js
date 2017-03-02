@@ -15,10 +15,12 @@ var notes = [];
 
 var self;
 var date;
+var accountId;
 
-function summary(date) {
+function summary(date, account) {
     self = this;
     self.date = date;
+    self.accountId = account._doc._id;
 }
 
 
@@ -30,6 +32,9 @@ summary.prototype.findIncomes = function () {
             }, {
                 infinite: true
             }])
+            .and({
+                accountId: self.accountId
+            })
             .exec(function (err, incomes) {
                 var list = [];
                 incomes.forEach(function (element) {
@@ -49,6 +54,9 @@ summary.prototype.findPayments = function () {
             }, {
                 infinite: true
             }])
+            .and({
+                accountId: self.accountId
+            })
             .exec(function (err, payments) {
                 var list = [];
                 payments.forEach(function (element) {
@@ -62,8 +70,10 @@ summary.prototype.findPayments = function () {
 
 summary.prototype.findNotes = function () {
     return new Promise(function (resolve, reject) {
-        Note.find()
-            .where('date', self.date)
+        Note.find().and({
+                date: self.date,
+                accountId: self.accountId
+            })
             .exec(function (err, notes) {
                 self.notes = notes;
                 resolve(self);

@@ -121,7 +121,7 @@ app.delete('/api/note/:id', authenticate, function (req, res) {
         finalize(null, `Deletd note with id ${noteId} .`, res);
     }).catch((e) => {
         finalize(e, null, res);
-    });   
+    });
 });
 
 app.get('/summary/get/:date', authenticate, function (req, res) {
@@ -130,7 +130,7 @@ app.get('/summary/get/:date', authenticate, function (req, res) {
     _l.log('incoming date is : ' + requestedDate);
 
     if (requestedDate) {
-        var result = new summary(requestedDate);
+        var result = new summary(requestedDate, req.account);
         result
             .findIncomes()
             .then(() => result.findPayments())
@@ -142,13 +142,15 @@ app.get('/summary/get/:date', authenticate, function (req, res) {
                     .calculateBalance()
                     .toPrettyMoney();
                 finalize(null, result, res)
+            }).catch((e) => {
+                finalize(e, null, res);
             });
     } else {
         finalize(Error('invalid date format'), 'Invalid date format!', res);
     }
 });
 
-app.post('/api/accounts', function (req, res) {
+app.post('/api/account', function (req, res) {
     var data = _.pick(req.body, ['email', 'password']);
     var account = new Account(data);
 
@@ -166,7 +168,7 @@ app.post('/api/accounts', function (req, res) {
         });
 });
 
-app.post('/api/accounts/login', function (req, res) {
+app.post('/api/account/login', function (req, res) {
     var email = req.body.email;
     var password = req.body.password;
 
@@ -182,7 +184,7 @@ app.post('/api/accounts/login', function (req, res) {
     });
 })
 
-app.get('/api/accounts/me', authenticate, function (req, res) {
+app.get('/api/account/me', authenticate, function (req, res) {
     res.send(req.account);
 });
 

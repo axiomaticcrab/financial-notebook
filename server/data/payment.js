@@ -44,6 +44,10 @@ var paymentSchema = new Schema({
         type: Boolean,
         required: '{PATH} is required',
         default: false
+    },
+    accountId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: '{PATH} is required'
     }
 });
 
