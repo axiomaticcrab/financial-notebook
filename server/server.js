@@ -58,34 +58,24 @@ var Expense = require('./data/expense');
 var Note = require('./data/note');
 var Account = require('./data/account');
 
-app.post('/expense/add', authenticate, function (req, res) {
+app.post('/api/expense', authenticate, function (req, res) {
     var data = _.pick(req.body, ['name', 'amount', 'toWhere', 'installmentAmount']);
     data.date = _c.formatDate(req.body.date);
-    var expense = new Expense(data);
+    data.accountId = req.account._id;
 
+    var expense = new Expense(data);
     expense.save(function (err) {
         finalize(err, expense, res);
     });
 });
 
-app.get('/expense/remove/:id', authenticate, function (req, res) {
+app.delete('/api/expense/:id', authenticate, function (req, res) {
     var expenseId = req.params.id;
-    Expense.findById(expenseId, function (err, expense) {
-        if (err) {
-            finalize(err, null, res);
-        } else {
-            if (expense) {
-                expense.remove(function (err) {
-                    if (err) {
-                        finalize(err, null, res);
-                    } else {
-                        finalize(null, `Deleted expense with id ${expenseId} .`, res);
-                    }
-                });
-            } else {
-                finalize(null, `There is no expense with id ${expenseId} to remove.`, res);
-            }
-        }
+
+    Expense.findAndDelete(expenseId, req.account).then(() => {
+        finalize(null, `Deleted expense with id ${expenseId} .`, res);
+    }).catch((e) => {
+        finalize(e, null, res);
     });
 });
 
@@ -103,10 +93,10 @@ app.post('/api/income', authenticate, function (req, res) {
 app.delete('/api/income/:id', authenticate, function (req, res) {
     var incomeId = req.params.id;
     Income.findAndDelete(incomeId, req.account).then(() => {
-        finalize(null, `Removed income with id ${incomeId}`, res);
+        finalize(null, `Deleted income with id ${incomeId}`, res);
     }).catch((e) => {
         finalize(e, null, res);
-    });  
+    });
 });
 
 app.post('/note/add', authenticate, function (req, res) {

@@ -43,9 +43,38 @@ var expenseSchema = new Schema({
         type: Boolean,
         required: '{PATH} is required',
         default: false
+    },
+    accountId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: '{PATH} is require.'
     }
 });
 
+
+expenseSchema.statics.findAndDelete = function (expenseId, account) {
+    return new Promise(function (resolve, reject) {
+        Expense.findById(expenseId).then((expense) => {
+            if (expense) {
+                resolve(expense.delete(account));
+            } else {
+                reject(`There is no expense with id ${expenseId}`);
+            }
+        }).catch((e)=>{
+            reject(e);
+        })
+    });
+}
+
+expenseSchema.methods.delete = function (account) {
+    var expense = this;
+    return new Promise(function (resolve, reject) {
+        if (account._doc._id.equals(expense._doc.accountId) === false) {
+            reject(`This account can not delete given expense.`);
+        } else {
+            resolve(expense.remove());
+        }       
+    });
+}
 
 //we need to create relevant payment object(s) after expense object has created.
 expenseSchema.post('save', function (doc) {
@@ -55,7 +84,7 @@ expenseSchema.post('save', function (doc) {
         var date = doc.date;
         for (i = 0; i < doc.installmentAmount; i++) {
             var order = i + 1;
-            doc.createPayment(doc.createPaymentName(doc.toWhere, doc.name, doc.installmentAmount, order,false), doc.amount, date, doc.id);
+            doc.createPayment(doc.createPaymentName(doc.toWhere, doc.name, doc.installmentAmount, order, false), doc.amount, date, doc.id);
             date = _c.getNextMonth(date);
         }
     } else if (doc.installmentAmount === -1) {
@@ -70,9 +99,13 @@ expenseSchema.post('save', function (doc) {
 
 expenseSchema.post('remove', function (doc) {
     _l.logInfo(`Removed expense with id ${doc.id}`);
+    return Expense.deletePayments(doc.id);
+});
 
+//delete relevant payment objects.
+expenseSchema.statics.deletePayments = function (expenseId) {
     Payment.find({
-        expenseId: doc.id
+        expenseId: expenseId
     }, function (err, payments) {
         payments.forEach(function (element) {
             element.remove(function (err) {
@@ -80,7 +113,7 @@ expenseSchema.post('remove', function (doc) {
             });
         }, this);
     });
-});
+}
 
 expenseSchema.methods.createPayment = function (name, amount, date, expenseId, infinite) {
     var payment = new Payment({

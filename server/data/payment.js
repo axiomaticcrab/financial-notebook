@@ -48,7 +48,7 @@ var paymentSchema = new Schema({
 });
 
 // paymentSchema.pre('save', function (doc) {
-//     //todo : check if there are any other payment objects with current expneseId and date.if yes throw an error because that should not possible!
+//     //todo : check if there are any other payment objects with current expneseId and date.if yes throw an error because that should not be possible!
 // })
 
 paymentSchema.post('save', function (doc) {
