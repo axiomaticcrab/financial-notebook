@@ -22,8 +22,37 @@ var noteSchema = new Schema({
             },
             messsage: 'The given date {VALUE} is not valid! Please send a date string with following format MM/YYYY'
         }
+    },
+    accountId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: '{PATH} is required'
     }
 });
+
+noteSchema.statics.findAndDelete = function (noteId, account) {
+    return new Promise(function (resolve, reject) {
+        Note.findById(noteId).then((note) => {
+            if (note) {
+                resolve(note.delete(account));
+            } else {
+                reject(`There is no Note with id ${noteId}`);
+            }
+        }).catch((e) => {
+            reject(e);
+        })
+    });
+}
+
+noteSchema.methods.delete = function (account) {
+    var note = this;
+    return new Promise(function (resolve, reject) {
+        if (account._doc._id.equals(note._doc.accountId) === false) {
+            reject('This user can not delete this note.')
+        } else {
+            resolve(note.remove());
+        }
+    });
+}
 
 noteSchema.post('save', function (doc) {
     _l.logInfo('Note created : ');

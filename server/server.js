@@ -99,12 +99,14 @@ app.delete('/api/income/:id', authenticate, function (req, res) {
     });
 });
 
-app.post('/note/add', authenticate, function (req, res) {
+app.post('/api/note/', authenticate, function (req, res) {
     var text = req.body.text;
     var date = _c.formatDate(req.body.date);
+    var accountId = req.account._id;
     var note = new Note({
         text,
-        date
+        date,
+        accountId
     });
 
     note.save(function (err) {
@@ -112,26 +114,14 @@ app.post('/note/add', authenticate, function (req, res) {
     });
 });
 
-app.get('/note/remove/:id', authenticate, function (req, res) {
+app.delete('/api/note/:id', authenticate, function (req, res) {
     var noteId = req.params.id;
 
-    Note.findById(noteId, function (err, note) {
-        if (err) {
-            finalize(err, null, res);
-        } else {
-            if (note) {
-                note.remove(function (err) {
-                    if (err) {
-                        finalize(err, null, res);
-                    } else {
-                        finalize(err, `Removed note with id ${noteId} .`, res);
-                    }
-                });
-            } else {
-                finalize(null, `There is no note with id ${noteId} to remove.`, res);
-            }
-        }
-    });
+    Note.findAndDelete(noteId, req.account).then(() => {
+        finalize(null, `Deletd note with id ${noteId} .`, res);
+    }).catch((e) => {
+        finalize(e, null, res);
+    });   
 });
 
 app.get('/summary/get/:date', authenticate, function (req, res) {
