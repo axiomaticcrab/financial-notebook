@@ -151,7 +151,7 @@ app.get('/summary/get/:date', authenticate, function (req, res) {
 });
 
 app.post('/api/account', function (req, res) {
-    var data = _.pick(req.body, ['email', 'password']);
+    var data = _.pick(req.body, ['email', 'password','name','surname']);
     var account = new Account(data);
 
     account.save()

@@ -33,7 +33,22 @@ var accountSchema = new Schema({
             type: String,
             require: '{PATH} is required.'
         },
-    }]
+    }],
+    name: {
+        type: String,
+        required: "{PATH} is required",
+        minlength: 1
+    },
+    surname: {
+        type: String,
+        required: '{PATH} is required',
+        minlength: 1
+    }
+});
+
+accountSchema.virtual('displayName').get(function () {
+    var account = this;
+    return `${account.name} ${account.surname}`;
 });
 
 accountSchema.methods.generateAuthToken = function () {
@@ -80,9 +95,18 @@ accountSchema.statics.findByCredentials = function (email, password) {
 
 accountSchema.methods.toJSON = function () {
     var account = this;
-    var accountObject = account.toObject();
-    return _.pick(accountObject, ['_id', 'email']);
+    var accountObject = account.toObject({
+        virtuals: true
+    });
+    return _.pick(accountObject, ['_id', 'email', 'displayName']);
 }
+
+accountSchema.pre('save', function (next) {
+    var account = this;
+    account.name = _.upperFirst(account.name);
+    account.surname = _.upperFirst(account.surname);
+    next();
+});
 
 var Account = mongoose.model('account', accountSchema);
 module.exports = Account;
