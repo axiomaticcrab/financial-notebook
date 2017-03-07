@@ -108,5 +108,11 @@ accountSchema.pre('save', function (next) {
     next();
 });
 
+accountSchema.methods.removeToken = function () {
+    var account = this;
+    account.tokens = [];
+    return account.save();
+}
+
 var Account = mongoose.model('account', accountSchema);
 module.exports = Account;

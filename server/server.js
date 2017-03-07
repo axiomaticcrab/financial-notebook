@@ -121,7 +121,7 @@ app.delete('/api/note/:id', authenticate, function (req, res) {
     });
 });
 
-app.get('/summary/get/:date', authenticate, function (req, res) {
+app.get('/api/summary/:date', authenticate, function (req, res) {
     var requestedDate = req.params.date;
     requestedDate = _c.formatDate(requestedDate);
     _l.log('incoming date is : ' + requestedDate);
@@ -183,8 +183,12 @@ app.post('/api/account/login', function (req, res) {
     });
 })
 
-app.get('/api/account/me', authenticate, function (req, res) {
-    res.send(req.account);
+app.get('/api/account/logout', authenticate, function (req, res) {
+    req.account.removeToken().then(() => {
+        finalize(null, null, res, null);
+    }).catch((e) => {
+        finalize(e, null, res, null);
+    })
 });
 
 app.listen(3000, () => console.log('server started at port 3000'));
