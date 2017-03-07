@@ -1,5 +1,5 @@
 const express = require('express');
-const cors = require('cors');//for cross origin.
+const cors = require('cors'); //for cross origin.
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const numeral = require('numeral');
@@ -18,7 +18,7 @@ var _l = new logger();
 _l.init(_l.LogLevels.Info);
 
 var app = express();
-app.use(bodyParser.json());//enable cross origin requests.
+app.use(bodyParser.json()); //enable cross origin requests.
 // app.use(cors());
 mongoose.connect('mongodb://localhost/financial-notebook');
 
@@ -39,8 +39,8 @@ mongoose.connection.on('disconnected', () => {
 function finalize(err, obj, res, header) {
     if (err) {
         _l.logException(err);
-        return res.status(400).send(err);        
-    } else {    
+        return res.status(400).send(err);
+    } else {
         if (header) {
             res.header(header).send(obj);
         } else {
@@ -178,6 +178,8 @@ app.post('/api/account/login', function (req, res) {
             }).catch((e) => {
                 finalize(e, null, res, null);
             });
+    }).catch((e) => {
+        finalize(e, null, res, null);
     });
 })
 
